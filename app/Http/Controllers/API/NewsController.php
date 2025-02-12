@@ -42,8 +42,7 @@ class NewsController extends Controller
     
             $News->save();
             return response()->json([
-                'message' => 'Berhasil menambhkan berita
-                ',
+                'message' => 'Berhasil menambhkan berita',
             ], 200);   
     }
 

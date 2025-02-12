@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\User;
 
 class GenerateEmailMail extends Mailable
 {
@@ -16,7 +17,7 @@ class GenerateEmailMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(protected User $user)
     {
         //
     }
@@ -27,7 +28,8 @@ class GenerateEmailMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Generate Email Mail',
+            from : env('MAIL_FROM_ADDRESS', 'musyafa@mail.com'),
+            subject: 'Generate OTP Code Berhasil',
         );
     }
 
@@ -37,7 +39,11 @@ class GenerateEmailMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'mail.generate',
+            with :[
+                'name' => $this->user->name,
+                'otp' => $this->user->otpdata->otp, 
+                ],
         );
     }
 

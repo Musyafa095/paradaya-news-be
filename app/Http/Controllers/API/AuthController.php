@@ -58,7 +58,7 @@ class AuthController extends Controller
             'required' => 'inputan :attribute wajib diisi',
         ]);
 
-        $credentials = $request(['email', 'password']);
+        $credentials = $request->only(['email', 'password']);
         if (!$token = auth()->attempt($credentials)){
             return response()->json(['error', 'Invalid User'], 401);
         }
