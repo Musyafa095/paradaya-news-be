@@ -28,7 +28,7 @@ class UserRegisterMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from : env('MAIL_FROM_ADDRESS', 'musyafa@mail.com'),
+            from : env('MAIL_FROM_ADDRESS', 'admin@mail.com'),
             subject: 'Register Berhasil',
         );
     }
