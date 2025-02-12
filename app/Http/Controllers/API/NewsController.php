@@ -12,14 +12,24 @@ class NewsController extends Controller
     {
         $this->middleware(['auth:api', 'admin'])->except(['index', 'show']);
     }
-    public function index()
+    public function index(Request $request)
     {
-        $allNews = News::all();
-        return response()->json([
-            'message' => 'berhasil menampilkan data berita',
-            'data' => $allNews
+        $query = News::query();
 
-        ]);
+        if ($request->has('search')) {
+            $searching = $request->input('search');
+            $query->where('name', "LIKE", "%$searching%");
+        }
+
+        $per_page = $request->input('per_page', 8);
+
+        $allNews = $query->paginate($per_page);
+
+        return response()->json([
+            'message' => 'Berita berhasil diTampilkan semua.',
+            'data' => $allNews
+        ], 200);
+        
     }
     public function store(Request $request)
     {
@@ -42,7 +52,7 @@ class NewsController extends Controller
     
             $News->save();
             return response()->json([
-                'message' => 'Berhasil menambhkan berita',
+                'message' => 'Berhasil menambahkan berita',
             ], 200);   
     }
 
@@ -101,7 +111,7 @@ class NewsController extends Controller
         $News = News::find($id);
         $News->delete();
         return response()->json([
-            'message' => 'berita berhasil dihapus'
+            'message' => 'Berhasil menghapus berita'
         ], 200);
     }
 }
