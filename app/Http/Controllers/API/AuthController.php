@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Otpcode;
 use Carbon\Carbon;
+use App\Mail\UserRegisterMail;
+use App\Mail\GenerateEmailMail;
 use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
@@ -37,6 +39,11 @@ class AuthController extends Controller
         $user->save();
         Mail::to($user->email)->send(new UserRegisterMail($user));
 
+        return response()->json([
+            'message' => 'User berhasil register, silahkan cek email anda',
+            'user' => $user
+        ], 201);
+
     }
 
     /**
@@ -44,35 +51,103 @@ class AuthController extends Controller
      */
     public function login (Request $request)
     {
-        //
+        $request->validate([
+            'email' => 'required',
+            'password' => 'required'
+        ],[
+            'required' => 'inputan :attribute wajib diisi',
+        ]);
+
+        $credentials = $request(['email', 'password']);
+        if (!$token = auth()->attempt($credentials)){
+            return response()->json(['error', 'Invalid User'], 401);
+        }
+        $user = User::where('email', $request->input('email'))->with(['profile' => function($query) {
+            $query->select('user_id', 'age', 'bio');
+        }, 'role'=> function($query){
+            $query->select('id','name');
+        }])->first();
+
+        return response()->json([
+            'message'=> 'User berhasil login',
+            'user' => $user,
+            'token' => $token
+        ], 200);
     }
 
     /**
      * Display the specified resource.
      */
-    public function currentuser(string $id)
+    public function currentuser()
     {
-        //
+            $user = auth()->user();
+            $userData = User::with('role', 'profile')->find($user->id);
+        return response()->json([
+            'user' => $userData
+        ], 201);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function logout(Request $request, string $id)
+    public function logout()
     {
-        //
+        auth()->logout();
+        return response()->json([
+            'message' => 'User berhasil logout'
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function generateOtp(string $id)
+    public function generateOtp(Request $request)
     {
-        //
+        $request->validate([
+            'email' => 'required|email',
+          ],[
+            'required' => 'inputan :attribute wajib diisi',
+            'email' => 'inputan :attribute harus berformat email'
+          ]);
+          $user = User::where('email', $request->input('email'))->first();
+          $user->generate_otp();
+        
+          Mail::to($user->email)->send(new GenerateEmailMail($user));
+          return response()->json([
+            'message' => 'OTP berhasil di generate, silahkan cek email anda'
+          ]);
     }
 
-    public function verifikasi(string $id)
+    public function verifikasi(Request $request)
     {
-        //
+        $request->validate([
+            'otp' => 'required|min:6',
+        ],[
+            'required' => 'inputan :attribute wajib diisi',
+            'min' => 'inputan maksimal :min karakter '
+        ]);
+           $user = auth()->user();
+           //Jika otp tidak ditemukan
+           $otp_code = Otpcode::where('otp', $request->input('otp'))->where('user_id', $user->id)->first();
+           if (!$otp_code){
+            return response()->json([
+                'message' => 'OTP anda tidak ditemukan'
+            ], 404);
+           }
+            //if OTP expired
+            $now = Carbon::now();
+            if ($now > $otp_code->valid_until){
+                return response()->json([
+                    'message' => 'OTP anda sudah kadaluarsa, silahkan generate ulang OTP anda'
+                ], 400);
+            }
+            //update user
+            $user =User::find($otp_code->user_id);
+            $user->email_verified_at = $now;
+            $user->save();
+            $otp_code->delete();
+            return response()->json([
+              'message' => 'Verifikasi anda berhasil'
+            ]);
     }
 }
