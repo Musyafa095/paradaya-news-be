@@ -8,7 +8,7 @@ use App\Models\Profile;
 
 class ProfileController extends Controller
 {
-    public function storeupdate (Request $request) {
+    public function updateProfile (Request $request) {
         $user = auth()->user();
         $request->validate([
             'bio' => 'required',

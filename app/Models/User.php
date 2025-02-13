@@ -89,6 +89,9 @@ class User extends Authenticatable implements JWTSubject
     public function otpdata(){
         return $this->hasOne(Otpcode::class, 'user_id');
     }    
-  
+    public function comments() {
+        return $this->hasMany(Comment::class, 'user_id');
+    }
+    
    
 }

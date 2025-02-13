@@ -9,31 +9,47 @@ use App\Models\News;
 
 class CommentController extends Controller
 {
-    public function storeupdate (Request $request) {
-        
+    public function updateCreateComment(Request $request) {
         $request->validate([
-            'comment' => 'required|min:10',
-            
+            'comment' => 'required|min:5',
+            'news_id' => 'required|exists:news,id'
         ], [
-            'required' => 'inputan :attribute wajib diisi',
-            'comment.min' => 'inputan :attribute minimal 10 karakter'
+            'comment.required' => 'Komentar wajib diisi',
+            'comment.min' => 'Komentar minimal 5 karakter',
+            'news_id.required' => 'ID berita wajib diisi',
+            'news_id.exists' => 'Berita tidak ditemukan'
         ]);
+    
         $user = auth()->user();
-        $news = News::find($request->input('movie_id'));
+        if (!$user) {
+            return response()->json([
+                'message' => 'User tidak terautentikasi'
+            ], 401);
+        }
+    
+        $news = News::find($request->input('news_id'));
         if (!$news) {
             return response()->json([
-                'message' => 'News not found'
+                'message' => 'Berita tidak ditemukan'
             ], 404);
         }
-        $comment = Comment::updateOrCreate(
-            ['user_id' => $user->id, 'news_id' => $news -> id]
-            ,[
-                'comment' => $request->input('comment')
-            ]);
+    
+        try {
+            $comment = Comment::updateOrCreate(
+                ['user_id' => $user->id, 'news_id' => $news->id],
+                ['comment' => $request->input('comment')]
+            );
+    
             return response()->json([
-                'message' => 'comment berhasil dibuat/diupdate',
+                'message' => 'Komentar berhasil dibuat/diupdate',
                 'data' => $comment,
             ], 201);
-            
-}
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat menyimpan komentar',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
 }
