@@ -38,7 +38,7 @@ class NewsController extends Controller
             'content' => 'required',
             'image' => "required|image|mimes:jpg,png,jpeg,gif,svg|max:2048",
             'year' => 'required',
-            'category_id' => 'required|exists:category,id'
+            'category_id' => 'required|exists:categories,id'
         ]);
         $uploadedFileUrl = cloudinary()->upload($request->file('image')->getRealPath(), [
             'folder' => 'image',
@@ -77,7 +77,7 @@ class NewsController extends Controller
             'title' => 'required',
             'content' => 'required',
             'year' => 'required',
-            'category_id' => 'required|exists:category,id'
+            'category_id' => 'required|exists:categories,id'
         ]);
 
         $News = News::find($id);

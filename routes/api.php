@@ -38,7 +38,7 @@ Route::prefix('v1')->group(function(){
   })->middleware('api');
   //middleware update profile
   Route::post('/profile', [ProfileController::class, 'updateProfile'])->middleware(['auth:api', 'verifiedAccount']);
-  Route::post('/comment', [CommentController::class, 'comment'])->middleware(['auth:api', 'verifiedAccount']);
+  Route::post('/comment', [CommentController::class, 'updateCreateComment'])->middleware(['auth:api', 'verifiedAccount']);
   });
 
 

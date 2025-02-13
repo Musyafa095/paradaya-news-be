@@ -10,21 +10,11 @@ use Illuminate\Support\Str;
 class Category extends Model
 {
     use HasFactory, HasUuids;
-    protected $table =  'categories';
-    protected $fillable =  ['name'];
-    public $incrementing = false;
-    public $timestamps = false;
-  
-  
+    protected $table = 'categories';
 
-    protected static function boot()
-    {
-        parent::boot();
-        self::creating(function ($model) {
-            $model->id = (string) Str::uuid();
-        });
-    }
-   public function news()
+    protected $fillable = ['name'];
+
+    public function news()
     {
         return $this->hasMany(News::class, 'category_id');
     }

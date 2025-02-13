@@ -66,6 +66,11 @@ class AuthController extends Controller
             $query->select('user_id', 'age', 'bio');
         }, 'role'=> function($query){
             $query->select('id','name');
+        },  'comments' => function($query) {
+            $query->select('id', 'user_id', 'news_id', 'comment', 'created_at');
+        },
+        'comments.news' => function($query) {
+            $query->select('id', 'title', 'content');
         }])->first();
 
         return response()->json([
@@ -81,7 +86,16 @@ class AuthController extends Controller
     public function currentuser()
     {
             $user = auth()->user();
-            $userData = User::with('role', 'profile')->find($user->id);
+            $userData = User::with(['profile' => function($query) {
+                $query->select('user_id', 'age', 'bio');
+            }, 'role'=> function($query){
+                $query->select('id','name');
+            },  'comments' => function($query) {
+                $query->select('id', 'user_id', 'news_id', 'comment', 'created_at');
+            },
+            'comments.news' => function($query) {
+                $query->select('id', 'title', 'content');
+            }])->find($user->id);
         return response()->json([
             'user' => $userData
         ], 201);
