@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->string('image', 255);
             $table->text('bio');
             $table->integer('age');
             $table->uuid('user_id');
