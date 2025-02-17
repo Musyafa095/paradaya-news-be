@@ -11,7 +11,7 @@ class Profile extends Model
 {
     use HasFactory, HasUuids;
     protected $table = 'profiles';
-    protected $fillable = ['bio', 'age', 'user_id'];
+    protected $fillable = ['image', 'bio', 'age', 'user_id'];
 
     public function user(){
         return $this->belongsTo(User::class, 'user_id');
