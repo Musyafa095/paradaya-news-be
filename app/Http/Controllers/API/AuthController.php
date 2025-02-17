@@ -63,7 +63,7 @@ class AuthController extends Controller
             return response()->json(['error', 'Invalid User'], 401);
         }
         $user = User::where('email', $request->input('email'))->with(['profile' => function($query) {
-            $query->select('user_id', 'age', 'bio');
+            $query->select('user_id', 'age', 'bio', 'image');
         }, 'role'=> function($query){
             $query->select('id','name');
         },  'comments' => function($query) {
@@ -87,7 +87,7 @@ class AuthController extends Controller
     {
             $user = auth()->user();
             $userData = User::with(['profile' => function($query) {
-                $query->select('user_id', 'age', 'bio');
+                $query->select('user_id', 'age', 'bio', 'image');
             }, 'role'=> function($query){
                 $query->select('id','name');
             },  'comments' => function($query) {
