@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title', 255);
             $table->text('content');
             $table->string('image', 255);
-            $table->year('year', 4);
+            $table->date('date');
             $table->uuid('category_id');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->timestamps();
