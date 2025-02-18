@@ -37,7 +37,7 @@ class NewsController extends Controller
             'title' => 'required',
             'content' => 'required',
             'image' => "required|image|mimes:jpg,png,jpeg,gif,svg|max:2048",
-            'year' => 'required',
+            'date' => 'required',
             'category_id' => 'required|exists:categories,id'
         ]);
         $uploadedFileUrl = cloudinary()->upload($request->file('image')->getRealPath(), [
@@ -46,7 +46,7 @@ class NewsController extends Controller
             $News = new News;
             $News->title = $request->input('title');
             $News ->content = $request->input('content');
-            $News -> year = $request->input('year');
+            $News -> date = $request->input('date');
             $News -> category_id = $request->input('category_id');
             $News -> image = $uploadedFileUrl;
     
@@ -76,7 +76,7 @@ class NewsController extends Controller
             'image' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             'title' => 'required',
             'content' => 'required',
-            'year' => 'required',
+            'date' => 'required',
             'category_id' => 'required|exists:categories,id'
         ]);
 
@@ -95,7 +95,7 @@ class NewsController extends Controller
         }
             $News->title = $request->input('title');
             $News -> content = $request->input('content');
-            $News -> year = $request->input('year');
+            $News -> date = $request->input('date');
             $News -> category_id = $request->input('category_id');
       
     

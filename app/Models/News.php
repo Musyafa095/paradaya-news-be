@@ -12,7 +12,7 @@ class News extends Model
 {
     use HasFactory, HasUuids;
     protected $table = 'news';
-    protected $fillable = ['title', 'content', 'image' , 'category_id', 'year'];
+    protected $fillable = ['title', 'content', 'image' , 'category_id', 'date'];
 
    public function category()
     {
